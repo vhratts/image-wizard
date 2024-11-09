@@ -7,7 +7,7 @@ export async function POST(req) {
     if (!width || !height || !color) {
       return new Response(
         JSON.stringify({ error: "Width, height, and color are required" }),
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -24,14 +24,17 @@ export async function POST(req) {
 
     return new Response(imageBuffer, {
       status: 200,
-      headers: { "Content-Type": "image/png" },
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "s-maxage=3599, stale-while-revalidate=3600",
+      },
     });
   } catch (error) {
     return new Response(
       JSON.stringify({ error: `Failed to create image: ${error.message}` }),
       {
         status: 500,
-      },
+      }
     );
   }
 }

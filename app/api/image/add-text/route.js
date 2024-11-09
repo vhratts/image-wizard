@@ -22,7 +22,7 @@ export async function POST(req) {
     ) {
       return new Response(
         JSON.stringify({ error: "All parameters are required" }),
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -32,7 +32,7 @@ export async function POST(req) {
     if (!fontResponse.ok) {
       return new Response(
         JSON.stringify({ error: "Failed to download the font" }),
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -49,7 +49,7 @@ export async function POST(req) {
 
     // Carregar a imagem base
     const baseImage = await sharp(
-      Buffer.from(imageBuffer, "base64"),
+      Buffer.from(imageBuffer, "base64")
     ).toBuffer();
     const { width, height } = await sharp(baseImage).metadata();
 
@@ -76,14 +76,17 @@ export async function POST(req) {
 
     return new Response(textImageBuffer, {
       status: 200,
-      headers: { "Content-Type": "image/png" },
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "s-maxage=3599, stale-while-revalidate=3600",
+      },
     });
   } catch (error) {
     return new Response(
       JSON.stringify({ error: `Failed to create image: ${error.message}` }),
       {
         status: 500,
-      },
+      }
     );
   }
 }
