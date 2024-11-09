@@ -1,16 +1,8 @@
 # Image Wizard 📸🧙‍♂️
 
-**Image Wizard** é uma API para criação e manipulação de imagens desenvolvida com Next.js e a biblioteca Sharp. A API fornece funcionalidades essenciais para criação e edição de imagens, como redimensionamento, adição de texto e sobreposição de imagens.
+**Image Wizard** é uma API para criação e manipulação de imagens usando Next.js e Sharp. Ela oferece funcionalidades como redimensionamento, corte, rotação, adição de texto, sobreposição, conversão de formato e criação de imagem a partir de texto, entre outras.
 
-Este repositório é ideal para desenvolvedores que desejam adicionar funcionalidades de edição de imagem aos seus projetos com uma API fácil de usar. Todas as chamadas são feitas via `POST` e devem conter o corpo da requisição em JSON.
-
-<p align="center">
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvhratts%2Fimage-wizard">
-<img src="https://vercel.com/button" alt="Deploy with Vercel"/>
-</a>
-</p>
-
-## Estrutura de rotas
+## Estrutura de Pastas
 
 ```plaintext
 ├── app/
@@ -22,8 +14,11 @@ Este repositório é ideal para desenvolvedores que desejam adicionar funcionali
 │   │   │   ├── create/route.js          # Cria uma nova imagem
 │   │   │   ├── add-text/route.js        # Adiciona texto à imagem
 │   │   │   ├── overlay/route.js         # Sobrepõe uma imagem em outra
-│   │   │   └── convert/route.js         # Converte a imagem
+│   │   │   ├── convert/route.js         # Converte a imagem
+│   │   │   └── text-to-image/route.js   # Converte texto em imagem
 ```
+
+---
 
 ## Endpoints
 
@@ -71,6 +66,26 @@ Adiciona texto em uma imagem, com fonte, cor, posição e tamanho personalizados
   - `x` (number): Posição horizontal do texto.
   - `y` (number): Posição vertical do texto.
 
+#### Exemplo de Chamada
+
+```typescript
+import axios from 'axios';
+
+async function addTextToImage() {
+  const response = await axios.post('/api/image/add-text', {
+    imageBuffer: '<base64 image>',
+    fontUrl: 'https://example.com/path/to/font.ttf',
+    text: 'Hello, World!',
+    color: '#FFFFFF',
+    fontSize: 48,
+    x: 50,
+    y: 50
+  }, { responseType: 'arraybuffer' });
+  const blob = new Blob([response.data], { type: 'image/png' });
+  console.log(URL.createObjectURL(blob));
+}
+```
+
 ---
 
 ### 3. **Sobrepor Imagem**
@@ -84,6 +99,23 @@ Sobrepõe uma imagem em outra em uma posição específica.
   - `overlayImageBuffer` (string): Imagem sobreposta em base64.
   - `x` (number): Posição horizontal.
   - `y` (number): Posição vertical.
+
+#### Exemplo de Chamada
+
+```typescript
+import axios from 'axios';
+
+async function overlayImage() {
+  const response = await axios.post('/api/image/overlay', {
+    baseImageBuffer: '<base64 base image>',
+    overlayImageBuffer: '<base64 overlay image>',
+    x: 100,
+    y: 100
+  }, { responseType: 'arraybuffer' });
+  const blob = new Blob([response.data], { type: 'image/png' });
+  console.log(URL.createObjectURL(blob));
+}
+```
 
 ---
 
@@ -139,11 +171,43 @@ Converte uma imagem para um formato especificado (JPEG, PNG ou WebP).
 
 ---
 
+### 8. **Converter Texto em Imagem**
+
+Gera uma imagem a partir de um texto, utilizando uma fonte personalizada, com cor e tamanho definidos.
+
+- **URL**: `/api/image/text-to-image`
+- **Método**: `POST`
+- **Parâmetros**:
+  - `text` (string): Texto a ser exibido na imagem.
+  - `fontUrl` (string): URL da fonte usada para escrever o texto.
+  - `fontSize` (number): Tamanho do texto em pixels.
+  - `fontColor` (string): Cor do texto em hexadecimal (ex.: `#000000`).
+
+#### Exemplo de Chamada
+
+```typescript
+import axios from 'axios';
+
+async function generateTextImage() {
+  const response = await axios.post('/api/image/text-to-image', {
+    text: 'Hello, Image Wizard!',
+    fontUrl: 'https://example.com/path/to/font.ttf',
+    fontSize: 48,
+    fontColor: '#000000'
+  }, { responseType: 'arraybuffer' });
+
+  const blob = new Blob([response.data], { type: 'image/png' });
+  console.log(URL.createObjectURL(blob));
+}
+```
+
+---
+
 ## Observações
 
-- As imagens devem ser enviadas em formato Base64 para processar corretamente.
-- Para a rota `add-text`, certifique-se de que a URL da fonte é acessível diretamente.
-- Enviar imagens grandes pode sobrecarregar o servidor.
+- As imagens devem ser enviadas em formato Base64 para processamento correto.
+- Certifique-se de que a URL da fonte é acessível diretamente para as rotas que utilizam fontes personalizadas.
+- Enviar imagens grandes pode sobrecarregar o servidor e causar erros de processamento.
 
 ## Contribuição
 
