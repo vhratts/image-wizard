@@ -10,18 +10,33 @@ Este repositório é ideal para desenvolvedores que desejam adicionar funcionali
 </a>
 </p>
 
+## Estrutura de rotas
+
+```plaintext
+├── app/
+│   ├── api/
+│   │   ├── image/
+│   │   │   ├── resize/route.js          # Redimensiona imagem
+│   │   │   ├── crop/route.js            # Corta imagem
+│   │   │   ├── rotate/route.js          # Rotaciona a imagem
+│   │   │   ├── create/route.js          # Cria uma nova imagem
+│   │   │   ├── add-text/route.js        # Adiciona texto à imagem
+│   │   │   ├── overlay/route.js         # Sobrepõe uma imagem em outra
+│   │   │   └── convert/route.js         # Converte a imagem
+```
+
 ## Endpoints
 
 ### 1. **Criar Imagem**
 
-Cria uma imagem com tamanho e cor de fundo especificados.
+Cria uma nova imagem com cor de fundo e tamanho especificados.
 
 - **URL**: `/api/image/create`
 - **Método**: `POST`
 - **Parâmetros**:
-  - `width` (number, obrigatório): Largura da imagem em pixels.
-  - `height` (number, obrigatório): Altura da imagem em pixels.
-  - `backgroundColor` (string, obrigatório): Cor de fundo da imagem em formato hexadecimal (ex.: `#FF5733`).
+  - `width` (number): Largura da imagem em pixels.
+  - `height` (number): Altura da imagem em pixels.
+  - `color` (string): Cor de fundo da imagem em hexadecimal (ex.: `#FF5733`).
 
 #### Exemplo de Chamada
 
@@ -29,20 +44,13 @@ Cria uma imagem com tamanho e cor de fundo especificados.
 import axios from 'axios';
 
 async function createImage() {
-  try {
-    const response = await axios.post('/api/image/create', {
-      width: 800,
-      height: 600,
-      backgroundColor: '#FF5733',
-    }, {
-      responseType: 'arraybuffer', // Para receber a imagem como binário
-    });
-
-    const blob = new Blob([response.data], { type: 'image/png' });
-    console.log(URL.createObjectURL(blob));
-  } catch (error) {
-    console.error('Erro ao criar a imagem:', error);
-  }
+  const response = await axios.post('/api/image/create', {
+    width: 800,
+    height: 600,
+    color: '#FF5733',
+  }, { responseType: 'arraybuffer' });
+  const blob = new Blob([response.data], { type: 'image/png' });
+  console.log(URL.createObjectURL(blob));
 }
 ```
 
@@ -50,83 +58,32 @@ async function createImage() {
 
 ### 2. **Adicionar Texto à Imagem**
 
-Adiciona texto em uma imagem, permitindo personalização de fonte, cor, posição e tamanho do texto.
+Adiciona texto em uma imagem, com fonte, cor, posição e tamanho personalizados.
 
 - **URL**: `/api/image/add-text`
 - **Método**: `POST`
 - **Parâmetros**:
-  - `imageBuffer` (string, obrigatório): Imagem base codificada em base64.
-  - `fontUrl` (string, obrigatório): URL direta para download da fonte.
-  - `text` (string, obrigatório): Texto a ser adicionado.
-  - `color` (string, obrigatório): Cor do texto em hexadecimal (ex.: `#FFFFFF`).
-  - `fontSize` (number, obrigatório): Tamanho da fonte em pixels.
-  - `x` (number, obrigatório): Posição horizontal do texto na imagem.
-  - `y` (number, obrigatório): Posição vertical do texto na imagem.
-
-#### Exemplo de Chamada
-
-```typescript
-import axios from 'axios';
-
-async function addTextToImage() {
-  try {
-    const response = await axios.post('/api/image/add-text', {
-      imageBuffer: 'BASE64_IMAGE_STRING',
-      fontUrl: 'https://example.com/path-to-font.woff2',
-      text: 'Hello World',
-      color: '#FFFFFF',
-      fontSize: 24,
-      x: 100,
-      y: 100,
-    }, {
-      responseType: 'arraybuffer',
-    });
-
-    const blob = new Blob([response.data], { type: 'image/png' });
-    console.log(URL.createObjectURL(blob));
-  } catch (error) {
-    console.error('Erro ao adicionar texto:', error);
-  }
-}
-```
+  - `imageBuffer` (string): Imagem base codificada em base64.
+  - `fontUrl` (string): URL para download da fonte.
+  - `text` (string): Texto a ser adicionado.
+  - `color` (string): Cor do texto em hexadecimal.
+  - `fontSize` (number): Tamanho da fonte em pixels.
+  - `x` (number): Posição horizontal do texto.
+  - `y` (number): Posição vertical do texto.
 
 ---
 
 ### 3. **Sobrepor Imagem**
 
-Sobrepõe uma imagem em outra, em uma posição específica.
+Sobrepõe uma imagem em outra em uma posição específica.
 
-- **URL**: `/api/image/overlay-image`
+- **URL**: `/api/image/overlay`
 - **Método**: `POST`
 - **Parâmetros**:
-  - `baseImageBuffer` (string, obrigatório): Imagem base codificada em base64.
-  - `overlayImageBuffer` (string, obrigatório): Imagem a ser sobreposta codificada em base64.
-  - `x` (number, obrigatório): Posição horizontal da imagem sobreposta.
-  - `y` (number, obrigatório): Posição vertical da imagem sobreposta.
-
-#### Exemplo de Chamada
-
-```typescript
-import axios from 'axios';
-
-async function overlayImage() {
-  try {
-    const response = await axios.post('/api/image/overlay-image', {
-      baseImageBuffer: 'BASE64_IMAGE_STRING',
-      overlayImageBuffer: 'OVERLAY_IMAGE_BASE64_STRING',
-      x: 50,
-      y: 75,
-    }, {
-      responseType: 'arraybuffer',
-    });
-
-    const blob = new Blob([response.data], { type: 'image/png' });
-    console.log(URL.createObjectURL(blob));
-  } catch (error) {
-    console.error('Erro ao sobrepor imagem:', error);
-  }
-}
-```
+  - `baseImageBuffer` (string): Imagem base em base64.
+  - `overlayImageBuffer` (string): Imagem sobreposta em base64.
+  - `x` (number): Posição horizontal.
+  - `y` (number): Posição vertical.
 
 ---
 
@@ -137,49 +94,60 @@ Redimensiona uma imagem para a largura e altura especificadas.
 - **URL**: `/api/image/resize`
 - **Método**: `POST`
 - **Parâmetros**:
-  - `imageBuffer` (string, obrigatório): Imagem a ser redimensionada codificada em base64.
-  - `width` (number, obrigatório): Nova largura da imagem em pixels.
-  - `height` (number, obrigatório): Nova altura da imagem em pixels.
-
-#### Exemplo de Chamada
-
-```typescript
-import axios from 'axios';
-
-async function resizeImage() {
-  try {
-    const response = await axios.post('/api/image/resize', {
-      imageBuffer: 'BASE64_IMAGE_STRING',
-      width: 400,
-      height: 300,
-    }, {
-      responseType: 'arraybuffer',
-    });
-
-    const blob = new Blob([response.data], { type: 'image/png' });
-    console.log(URL.createObjectURL(blob));
-  } catch (error) {
-    console.error('Erro ao redimensionar imagem:', error);
-  }
-}
-```
+  - `imageBuffer` (string): Imagem a ser redimensionada em base64.
+  - `width` (number): Nova largura.
+  - `height` (number): Nova altura.
 
 ---
 
-## Observações Importantes
+### 5. **Cortar Imagem**
 
-- **Formato de Imagem**: As imagens devem ser enviadas em formato base64 para o processamento correto.
-- **Fonte Externa**: A URL da fonte para a rota `add-text` precisa ser direta, sem redirecionamentos.
-- **Limitações de Tamanho**: Enviar imagens muito grandes pode causar sobrecarga no servidor, levando a erros.
-- **Códigos de Erro**:
-  - `400` - Parâmetros inválidos ou ausentes.
-  - `500` - Erro no processamento da imagem.
+Corta uma imagem nas dimensões e posição especificadas.
+
+- **URL**: `/api/image/crop`
+- **Método**: `POST`
+- **Parâmetros**:
+  - `imageBuffer` (string): Imagem base em base64.
+  - `width` (number): Largura do corte.
+  - `height` (number): Altura do corte.
+  - `left` (number): Posição horizontal inicial.
+  - `top` (number): Posição vertical inicial.
 
 ---
+
+### 6. **Rotacionar Imagem**
+
+Rotaciona a imagem em um ângulo específico.
+
+- **URL**: `/api/image/rotate`
+- **Método**: `POST`
+- **Parâmetros**:
+  - `imageBuffer` (string): Imagem base em base64.
+  - `angle` (number): Ângulo de rotação em graus.
+
+---
+
+### 7. **Converter Imagem**
+
+Converte uma imagem para um formato especificado (JPEG, PNG ou WebP).
+
+- **URL**: `/api/image/convert`
+- **Método**: `POST`
+- **Parâmetros**:
+  - `imageBuffer` (string): Imagem base em base64.
+  - `format` (string): Formato desejado (`jpeg`, `png`, `webp`).
+
+---
+
+## Observações
+
+- As imagens devem ser enviadas em formato Base64 para processar corretamente.
+- Para a rota `add-text`, certifique-se de que a URL da fonte é acessível diretamente.
+- Enviar imagens grandes pode sobrecarregar o servidor.
 
 ## Contribuição
 
-Sinta-se à vontade para contribuir com novas funcionalidades ou melhorias! Faça um fork do repositório, adicione suas modificações e envie um pull request. Sugestões e feedback são sempre bem-vindos.
+Para contribuir, faça um fork do repositório, crie uma branch para suas mudanças e envie um pull request com uma breve descrição das melhorias.
 
 ## Licença
 
