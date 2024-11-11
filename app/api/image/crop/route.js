@@ -23,7 +23,7 @@ export async function POST(req) {
       status: 200,
       headers: {
         "Content-Type": "image/png",
-        "Cache-Control": "s-maxage=2592000, stale-while-revalidate=2592000",
+        "Cache-Control": "s-maxage=3600, stale-while-revalidate=3600",
       },
     });
   } catch (error) {
