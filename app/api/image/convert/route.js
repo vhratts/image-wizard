@@ -13,9 +13,9 @@ export async function POST(req) {
 
     return new Response(convertedImage, {
       status: 200,
-      headers: { 
+      headers: {
         "Content-Type": `image/${format}`,
-        "Cache-Control": "s-maxage=3599, stale-while-revalidate=3600",
+        "Cache-Control": "s-maxage=2592000, stale-while-revalidate=2592000",
       },
     });
   } catch (error) {

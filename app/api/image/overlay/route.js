@@ -9,13 +9,13 @@ export async function POST(req) {
         JSON.stringify({
           error: "Base image, overlay image, x, and y are required",
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const baseImage = sharp(Buffer.from(baseImageBuffer, "base64"));
     const overlayImage = await sharp(
-      Buffer.from(overlayImageBuffer, "base64")
+      Buffer.from(overlayImageBuffer, "base64"),
     ).toBuffer();
 
     const compositeImage = await baseImage
@@ -26,7 +26,7 @@ export async function POST(req) {
       status: 200,
       headers: {
         "Content-Type": "image/png",
-        "Cache-Control": "s-maxage=3599, stale-while-revalidate=3600",
+        "Cache-Control": "s-maxage=2592000, stale-while-revalidate=2592000",
       },
     });
   } catch (error) {
@@ -34,7 +34,7 @@ export async function POST(req) {
       JSON.stringify({ error: `Failed to create image: ${error.message}` }),
       {
         status: 500,
-      }
+      },
     );
   }
 }
